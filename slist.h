@@ -27,7 +27,16 @@
 #ifndef INTRUSIVE_SLIST_H_INCLUDED
 #define INTRUSIVE_SLIST_H_INCLUDED
 
-#define _ASSERT( ... )
+#if defined( _INTRUSIVE_LIST_ASSERT_ENABLED )
+#  if !defined( _INTRUSIVE_LIST_ASSERT )
+#    include <assert.h>
+#    define _INTRUSIVE_LIST_ASSERT( cond, ... ) assert( cond )
+#  endif
+#else
+#  if !defined( _INTRUSIVE_LIST_ASSERT )
+#    define _INTRUSIVE_LIST_ASSERT( ... )
+#  endif
+#endif
 
 template <typename T>
 struct slist_node
@@ -59,7 +68,7 @@ public:
 	void insert_head( T* elem )
 	{
 		slist_node<T>* node = &(elem->*NODE);
-		_ASSERT( node->next == 0x0 );
+		_INTRUSIVE_LIST_ASSERT( node->next == 0x0 );
 		node->next = head_ptr;
 		head_ptr = elem;
 		if( tail_ptr == 0x0 )
@@ -77,7 +86,7 @@ public:
 		else
 		{
 			slist_node<T>* tail_node = &(tail_ptr->*NODE);
-			_ASSERT( node->next == 0x0 );
+			_INTRUSIVE_LIST_ASSERT( tail_node->next == 0x0 );
 			tail_node->next = elem;
 			tail_ptr = elem;
 		}
@@ -103,7 +112,7 @@ public:
 	 */
 	T* remove_head()
 	{
-		_ASSERT( !empty() );
+		_INTRUSIVE_LIST_ASSERT( !empty() );
 		slist_node<T>* node = &(head_ptr->*NODE);
 		T* ret = head_ptr;
 		if( head_ptr == tail_ptr )

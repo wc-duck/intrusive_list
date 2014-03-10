@@ -33,16 +33,14 @@ end
 config   = "debug"
 
 local settings = NewSettings()
-local gtest_settings = NewSettings()
 
 local output_path = PathJoin( BUILD_PATH, PathJoin( config, platform ) )
 local output_func = function(settings, path) return PathJoin(output_path, PathFilename(PathBase(path)) .. settings.config_ext) end
 settings.cc.Output = output_func
 settings.lib.Output = output_func
 settings.link.Output = output_func
-gtest_settings.cc.Output = output_func
-gtest_settings.lib.Output = output_func
-gtest_settings.link.Output = output_func
+
+settings.cc.defines:Add("_INTRUSIVE_LIST_ASSERT_ENABLED")
 
 if family ~= "windows" then
 	settings.cc.flags:Add( "-Wconversion", "-Wextra", "-Wall", "-Werror", "-Wstrict-aliasing=2" )

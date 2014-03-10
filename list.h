@@ -27,8 +27,16 @@
 #ifndef INTRUSIVE_LIST_H_INCLUDED
 #define INTRUSIVE_LIST_H_INCLUDED
 
-#include <assert.h>
-#define _ASSERT( cond, ... ) assert( cond )
+#if defined( _INTRUSIVE_LIST_ASSERT_ENABLED )
+#  if !defined( _INTRUSIVE_LIST_ASSERT )
+#    include <assert.h>
+#    define _INTRUSIVE_LIST_ASSERT( cond, ... ) assert( cond )
+#  endif
+#else
+#  if !defined( _INTRUSIVE_LIST_ASSERT )
+#    define _INTRUSIVE_LIST_ASSERT( ... )
+#  endif
+#endif
 
 template <typename T>
 struct list_node
@@ -66,8 +74,8 @@ public:
 	{
 		list_node<T>* node = &(elem->*NODE);
 
-		_ASSERT( node->next == 0x0 );
-		_ASSERT( node->prev == 0x0 );
+		_INTRUSIVE_LIST_ASSERT( node->next == 0x0 );
+		_INTRUSIVE_LIST_ASSERT( node->prev == 0x0 );
 
 		node->prev = 0;
 		node->next = head_ptr;
@@ -96,8 +104,8 @@ public:
 		{
 			list_node<T>* tail_node = &(tail_ptr->*NODE);
 			list_node<T>* item_node = &(item->*NODE);
-			_ASSERT( item_node->next == 0x0 );
-			_ASSERT( item_node->prev == 0x0 );
+			_INTRUSIVE_LIST_ASSERT( item_node->next == 0x0 );
+			_INTRUSIVE_LIST_ASSERT( item_node->prev == 0x0 );
 			tail_node->next = item;
 			item_node->prev = tail_ptr;
 			item_node->next = 0x0;
